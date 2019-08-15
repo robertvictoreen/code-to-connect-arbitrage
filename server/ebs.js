@@ -14,6 +14,7 @@ fs.createReadStream('ebs.csv')
     .on('data', row => { 
         row.provider = 'ebs';
         csvArray.push(row);
+        console.log(row);
     })
     .on('end', () => {
         console.log('CSV file successfully processed');
