@@ -3,93 +3,149 @@
 
 import java.util.*;
 
-class Arbitrage {
-
-    LinkedList<Quote> bbg;
-    LinkedList<Quote> ebs;
-    LinkedList<Quote> reu;
-
-    Queue<String> log;
+public class Arbitrage {
 
 
   public static void main(String[] args) {
 
-    log = new LinkedList<>(); 
+    LinkedList<Quote> bbg = new LinkedList<>();
+    LinkedList<Quote> ebs = new LinkedList<>();
+    LinkedList<Quote> reu = new LinkedList<>();
 
-    bbg = new LinkedList<>();
-    ebs = new LinkedList<>();
-    reu = new LinkedList<>();
+    bbg.push(new Quote("X:XX:XX", "", 0, 0));
+    bbg.push(new Quote("X:XX:XX", "", 0, 0));
+    bbg.push(new Quote("X:XX:XX", "", 0, 0));
+    bbg.push(new Quote("X:XX:XX", "", 0, 0));
+    bbg.push(new Quote("X:XX:XX", "", 0, 0));
 
-    TreeSet<Quote> maxAskQuotes = new TreeSet();
-    TreeSet<Quote> minBidQuotes = new TreeSet();
+    ebs.push(new Quote("X:XX:XX", "", 0, 0));
+    ebs.push(new Quote("X:XX:XX", "", 0, 0));
+    ebs.push(new Quote("X:XX:XX", "", 0, 0));
+    ebs.push(new Quote("X:XX:XX", "", 0, 0));
+
+    reu.push(new Quote("X:XX:XX", "", 0, 0));
+    reu.push(new Quote("X:XX:XX", "", 0, 0));
+    reu.push(new Quote("X:XX:XX", "", 0, 0));
+
+    TreeSet<Quote> maxAskQuotes = new TreeSet<Quote>((q1, q2) -> {
+        return Double.compare(q1.getAsk(), q2.getAsk());
+    });
+    TreeSet<Quote> minBidQuotes = new TreeSet<Quote>((q1, q2) -> {
+        return Double.compare(q1.getBid(), q2.getBid());
+    });
+
+    System.out.println("Bbg size: " + bbg.size());
 
     double totalProfit = 0;
 
-    while (true) { //Every second
+    Scanner scan = new Scanner(System.in);
+
+    while (scan.hasNext()) { //Every second
 
         //Instert new data from each provider
-        Quote newBbg = new Quote("", "", 0, 0);
-        bbg.offer(newBbg);
-        maxAskQuotes.add(newBbg);
-        minBidQuotes.add(newBbg);
 
-        Quote newEbs = new Quote("", "", 0, 0);
+        String time = scan.next();
+        String symbol = scan.next();
+        double ask = scan.nextDouble();
+        double bid = scan.nextDouble();
+
+        //System.out.println();
+
+        scan.nextLine();
+
+        Quote newReu = new Quote(time, symbol, ask, bid);
+        reu.offer(newReu);
+        maxAskQuotes.add(newReu);
+        minBidQuotes.add(newReu);
+
+        System.out.println("Done");
+        System.out.println("TreeSet size: " + maxAskQuotes.size());
+        
+
+        time = scan.next();
+        symbol = scan.next();
+        ask = scan.nextDouble();
+        bid = scan.nextDouble();
+        scan.nextLine();
+
+        Quote newEbs = new Quote(time, symbol, ask, bid);
         ebs.offer(newEbs);
         maxAskQuotes.add(newEbs);
         minBidQuotes.add(newEbs);
 
-        Quote newReu = new Quote("", "", 0, 0);
-        reu.offer(newReu);
-        maxAskQuotes.add(newReu);
-        minBidQuotes.add(newReu);
+        System.out.println("Done");
+        System.out.println("TreeSet size: " + maxAskQuotes.size());
+        
+
+        time = scan.next();
+        symbol = scan.next();
+        ask = scan.nextDouble();
+        bid = scan.nextDouble();
+        scan.nextLine();
+
+        Quote newBbg = new Quote(time, symbol, ask, bid);
+        bbg.offer(newBbg);
+        maxAskQuotes.add(newBbg);
+        minBidQuotes.add(newBbg);
+
+        System.out.println("Done");
+
+        System.out.println("TreeSet size: " + maxAskQuotes.size());
+        
 
         //Remove expired prices
         //if (bbg.size() > 5) {
             Quote q = bbg.poll();
             if (!q.getSymbol().equals("X:XX:XX")) {
-                askPrices.remove(q);
-                bidPrices.remove(q);
+                maxAskQuotes.remove(q);
+                minBidQuotes.remove(q);
             }
         //}
 
         //if (ebs.size() > 4) {
-            Quote q = ebs.poll();
+            q = ebs.poll();
             if (!q.getSymbol().equals("X:XX:XX")) {
-                askPrices.remove(q);
-                bidPrices.remove(q);
+                maxAskQuotes.remove(q);
+                minBidQuotes.remove(q);
             }
         //}
 
         //if (reu.size() > 3) {
-            Quote q = reu.poll();
+            q = reu.poll();
             if (!q.getSymbol().equals("X:XX:XX")) {
-                askPrices.remove(q);
-                bidPrices.remove(q);
+                maxAskQuotes.remove(q);
+                minBidQuotes.remove(q);
             }
         //}
 
         //Get arbitrage profit
-        Quote askQuote = maxAskQuotes.last();
-        Quote bidQuote = minBidQuotes.first();
+        while (true) {
+            Quote askQuote = maxAskQuotes.last();
+            Quote bidQuote = minBidQuotes.first();
 
-        double ask = askQuote.getAsk();
-        double bid = bidQuote.getBid();
+            ask = askQuote.getAsk();
+            bid = bidQuote.getBid();
 
-        double profit = bid - ask;
+            double profit = bid - ask;
 
-        if (profit > 0) {
-            askPrices.pollLast();
-            bidPrices.pollFirst();
+            if (profit > 0) {
+                maxAskQuotes.pollLast();
+                minBidQuotes.pollFirst();
 
-            totalProfit += profit;
-        }
+                totalProfit += profit;
+
+                System.out.println("Made profit: " + profit);
+            } else {
+                break;
+            }
+        }  
 
     }
 
 
   }
 
-  private fillSampleData() {
+  public void fillSampleData(LinkedList<Quote> bbg, LinkedList<Quote> ebs, LinkedList<Quote> reu) {
     Quote newQuote;
 
     bbg.push(new Quote("X:XX:XX", "", 0, 0));
@@ -141,12 +197,12 @@ class Arbitrage {
 
 class Quote {
 
-    private float bid;
-    private float ask;
+    private double bid;
+    private double ask;
     private String symbol;
     private String time;
 
-    public Quote(String time, String symbol, float bid, float ask) {
+    public Quote(String time, String symbol, double bid, double ask) {
         this.time = time;
         this.symbol = symbol;
         this.bid = bid;
@@ -157,11 +213,11 @@ class Quote {
         return symbol;
     }
 
-    public float getAsk() {
+    public double getAsk() {
         return ask;
     }
 
-    public float getBid() {
+    public double getBid() {
         return bid;
     }
 
