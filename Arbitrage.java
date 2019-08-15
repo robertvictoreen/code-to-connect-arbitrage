@@ -2,6 +2,7 @@
  */
 
 import java.util.*;
+import java.text.*;
 
 public class Arbitrage {
 
@@ -75,8 +76,6 @@ public class Arbitrage {
         reu.offer(newReu);
         maxAskQuotes.add(newReu);
         minBidQuotes.add(newReu);
-
-        System.out.println("TreeSet size: " + maxAskQuotes.size());
         
         provider = scan.next();
         time = scan.next();
@@ -89,8 +88,6 @@ public class Arbitrage {
         ebs.offer(newEbs);
         maxAskQuotes.add(newEbs);
         minBidQuotes.add(newEbs);
-
-        System.out.println("TreeSet size: " + maxAskQuotes.size());
         
         provider = scan.next();
         time = scan.next();
@@ -104,9 +101,6 @@ public class Arbitrage {
         maxAskQuotes.add(newBbg);
         minBidQuotes.add(newBbg);
 
-        System.out.println("Done");
-
-        System.out.println("TreeSet size: " + maxAskQuotes.size());
         
 
         //Remove expired prices
@@ -134,8 +128,6 @@ public class Arbitrage {
             }
         //}
 
-        System.out.println("Start profit calculation");
-
 
         //Get arbitrage profit
         while (true) {
@@ -155,8 +147,9 @@ public class Arbitrage {
                 minBidQuotes.pollLast();
 
                 totalProfit += profit;
+                DecimalFormat df = new DecimalFormat("0.0000");
 
-                System.out.println("Made profit: " + profit);
+                System.out.println("Total Profit: " + df.format(totalProfit).toString());
             } else {
                 break;
             }
