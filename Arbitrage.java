@@ -143,11 +143,18 @@ public class Arbitrage {
             double profit = bid - ask;
 
             if (profit > 0) {
+				DecimalFormat df = new DecimalFormat("0.0000");
+				//socket send 
+				/*
+				String buyOrder = askQuote.getSymbol() + " B " + df.format(askQuote.getAsk());
+				String sellOrder = bidQuote.getSymbol() + " S " + df.format(bidQuote.getBid());
+				*/
+				
                 maxAskQuotes.pollFirst();
                 minBidQuotes.pollLast();
 
                 totalProfit += profit;
-                DecimalFormat df = new DecimalFormat("0.0000");
+                
 
                 System.out.println("Total Profit: " + df.format(totalProfit).toString());
             } else {
