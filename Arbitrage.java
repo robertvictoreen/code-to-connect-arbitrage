@@ -9,17 +9,103 @@ class Arbitrage {
     LinkedList<Quote> ebs;
     LinkedList<Quote> reu;
 
+    Queue<String> log;
+
 
   public static void main(String[] args) {
+
+    log = new LinkedList<>(); 
 
     bbg = new LinkedList<>();
     ebs = new LinkedList<>();
     reu = new LinkedList<>();
 
+    TreeSet<Quote> maxAskQuotes = new TreeSet();
+    TreeSet<Quote> minBidQuotes = new TreeSet();
+
+    double totalProfit = 0;
+
+    while (true) { //Every second
+
+        //Instert new data from each provider
+        Quote newBbg = new Quote("", "", 0, 0);
+        bbg.offer(newBbg);
+        maxAskQuotes.add(newBbg);
+        minBidQuotes.add(newBbg);
+
+        Quote newEbs = new Quote("", "", 0, 0);
+        ebs.offer(newEbs);
+        maxAskQuotes.add(newEbs);
+        minBidQuotes.add(newEbs);
+
+        Quote newReu = new Quote("", "", 0, 0);
+        reu.offer(newReu);
+        maxAskQuotes.add(newReu);
+        minBidQuotes.add(newReu);
+
+        //Remove expired prices
+        //if (bbg.size() > 5) {
+            Quote q = bbg.poll();
+            if (!q.getSymbol().equals("X:XX:XX")) {
+                askPrices.remove(q);
+                bidPrices.remove(q);
+            }
+        //}
+
+        //if (ebs.size() > 4) {
+            Quote q = ebs.poll();
+            if (!q.getSymbol().equals("X:XX:XX")) {
+                askPrices.remove(q);
+                bidPrices.remove(q);
+            }
+        //}
+
+        //if (reu.size() > 3) {
+            Quote q = reu.poll();
+            if (!q.getSymbol().equals("X:XX:XX")) {
+                askPrices.remove(q);
+                bidPrices.remove(q);
+            }
+        //}
+
+        //Get arbitrage profit
+        Quote askQuote = maxAskQuotes.last();
+        Quote bidQuote = minBidQuotes.first();
+
+        double ask = askQuote.getAsk();
+        double bid = bidQuote.getBid();
+
+        double profit = bid - ask;
+
+        if (profit > 0) {
+            askPrices.pollLast();
+            bidPrices.pollFirst();
+
+            totalProfit += profit;
+        }
+
+    }
+
+
   }
 
   private fillSampleData() {
     Quote newQuote;
+
+    bbg.push(new Quote("X:XX:XX", "", 0, 0));
+    bbg.push(new Quote("X:XX:XX", "", 0, 0));
+    bbg.push(new Quote("X:XX:XX", "", 0, 0));
+    bbg.push(new Quote("X:XX:XX", "", 0, 0));
+    bbg.push(new Quote("X:XX:XX", "", 0, 0));
+
+    ebs.push(new Quote("X:XX:XX", "", 0, 0));
+    ebs.push(new Quote("X:XX:XX", "", 0, 0));
+    ebs.push(new Quote("X:XX:XX", "", 0, 0));
+    ebs.push(new Quote("X:XX:XX", "", 0, 0));
+
+    reu.push(new Quote("X:XX:XX", "", 0, 0));
+    reu.push(new Quote("X:XX:XX", "", 0, 0));
+    reu.push(new Quote("X:XX:XX", "", 0, 0));
 
     newQuote = new Quote("0:00:00", "EURUSD", 1.2000, 1.2240);
     bbg.add(newQuote);
@@ -65,6 +151,10 @@ class Quote {
         this.symbol = symbol;
         this.bid = bid;
         this.ask = ask;
+    }
+
+    public String getSymbol() {
+        return symbol;
     }
 
     public float getAsk() {
