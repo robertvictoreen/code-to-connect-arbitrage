@@ -7,12 +7,12 @@ const fs = require('fs');
 let csvArray = [];
 
 
-fs.createReadStream('bbg.csv')
+fs.createReadStream('reu.csv')
     .pipe(csv({
         headers: false
     }))
     .on('data', row => {    
-        row.provider = 'bbg';
+        row.provider = 'reu';
         csvArray.push(row);
     })
     .on('end', () => {
@@ -21,11 +21,9 @@ fs.createReadStream('bbg.csv')
         io.on('connection', async (socket) => { 
     
             for (let i = 0; i < csvArray.length; i++) {
-                socket.emit('bbg', csvArray[i]);
+                socket.emit('reu', csvArray[i]);
                 await new Promise(resolve => setTimeout(resolve, 1000))
-            }
-            
-        
+            }    
         });
     });
 
@@ -34,8 +32,8 @@ app.get('/', (req, res) => {
 });
 
 
-http.listen(3000, () => {
-    console.log('listening on *:3000');
+http.listen(5000, () => {
+    console.log('listening on *:5000');
 });
 
 
